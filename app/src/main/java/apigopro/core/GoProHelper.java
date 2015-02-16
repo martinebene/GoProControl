@@ -35,7 +35,8 @@ import apigopro.core.model.CamFields;
 public class GoProHelper {
 
 	public static final boolean LOGGING_ENABLED = false;
-    public static final int TIMEOUT = 10;
+    public static final int TIMEOUT = 10000;
+    public static final int PASO_TIMEOUT = 10;
 	private final DefaultHttpClient mClient = newInstance();
 	private String mCameraAddress = null;
 	private String ipAddress;
@@ -103,10 +104,10 @@ public class GoProHelper {
         res = null;
         new AsynConection().execute(paramString);
 
-        for (int i=1; (res == null)  && (i < TIMEOUT); i++){
-            Log.i("tag","En espera " + i + " segundos\n");
+        for (int i=1; (res == null)  && (i < TIMEOUT); i=(i+PASO_TIMEOUT)){
+            Log.i("tag","En espera " + i + " milisegundos\n");
             try {
-                Thread.sleep(1000);
+                Thread.sleep(PASO_TIMEOUT);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -235,8 +236,7 @@ public class GoProHelper {
         protected Object doInBackground(Object... arg0) {
 
             try {
-                Log.i("tag", "en sendget simple antes de sendget con mClient: + ( "+ arg0[0] +")\n");
-
+                //Log.i("tag", "en sendget simple antes de sendget con mClient: + ( "+ arg0[0] +")\n");
                 InputStream data = null;
                 long j=0;
                 HttpClient client = new DefaultHttpClient();
@@ -249,10 +249,10 @@ public class GoProHelper {
                     e.printStackTrace();
                 }
 
-                if (data == null){
+/*                if (data == null){
                     Log.i("tag","En sendget 6 data null\n");}
                 else{
-                    Log.i("tag","En sendget 6 data ok\n");}
+                    Log.i("tag","En sendget 6 data ok\n");}*/
 
                    res = getBytesFromInputStream(data, j);
 
@@ -433,13 +433,13 @@ public class GoProHelper {
 
     public CamFields getCameraSettings() throws Exception {
         try {
-            Log.i("tag", "antes de hacer el sendget\n");Thread.sleep(1000);
+            //Log.i("tag", "antes de hacer el sendget\n");Thread.sleep(1000);
             byte[] arrayOfByte = sendGET(this.mCameraAddress + "/camera/se" + "?t=" + this.getToken());
             Thread.sleep(3000);
             if (arrayOfByte == null)
                 Log.i("tag", "array nulo\n");Thread.sleep(1000);
 
-            Log.i("tag", "despues de hacer el sendget: arraylenght\n" + arrayOfByte.length);Thread.sleep(1000);
+            //Log.i("tag", "despues de hacer el sendget: arraylenght\n" + arrayOfByte.length);Thread.sleep(1000);
 
             return getCameraSettings(new GoProProtocolParser(arrayOfByte));
         } catch (Exception e) {
